@@ -1,0 +1,16 @@
+#cloud-config
+
+timezone: Asia/Tokyo
+locale: ja_JP.utf8
+
+repo_update: true
+repo_upgrade: all
+
+users:
+  - name: charlotte
+  - gecos: Charlotte.J.Ikurumi
+  -
+
+packages:
+  - openvpn
+  - easy-rsa
