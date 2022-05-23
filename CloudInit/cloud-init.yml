@@ -7,10 +7,10 @@ repo_update: true
 repo_upgrade: all
 
 users:
+  - default
   - name: charlotte
   - gecos: Charlotte.J.Ikurumi
-  -
-
-packages:
-  - openvpn
-  - easy-rsa
+  - sudo:  ALL=(ALL) NOPASSWD:ALL
+  - ssh_pwauth: False
+  - ssh_authorized_keys:
+    - XXXXXX
