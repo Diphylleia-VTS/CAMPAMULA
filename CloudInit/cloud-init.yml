@@ -8,9 +8,114 @@ repo_upgrade: all
 
 users:
   - default
+  - name: ansible_user
+    groups: [sudo]
+    gecos: ansible
+    lock_passwd: false
+    passwd: serizawahonoka
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    uid: 500
+    ssh_pwauth: False
+    ssh_authorized_keys:
+      - Your SSH Key
   - name: charlotte
-  - gecos: Charlotte.J.Ikurumi
-  - sudo:  ALL=(ALL) NOPASSWD:ALL
-  - ssh_pwauth: False
-  - ssh_authorized_keys:
-    - XXXXXX
+    groups: [sudo]
+    gecos: Charlotte.J.Ikurumi
+    lock_passwd: false
+    passwd: serizawahonoka
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    uid: 1000
+    ssh_pwauth: False
+    ssh_authorized_keys:
+      - Your SSH Key
+
+packages:
+  - containerd
+  - rootlesskit
+  - curl
+  - golang
+  - make
+  - ansible
+
+write_files:
+  - content: |
+      - hosts: all
+        connection: local
+        remote_user: ansible_user
+
+        tasks:
+          - name: create_nerdctl_directory
+            ansible.builtin.file:
+              path: /tmp/nerdctl
+              state: directory
+              owner: root
+              mode: "777"
+          - name: create_tmp_buildkit_directory
+            ansible.builtin.file:
+              path: /tmp/buildkit
+              state: directory
+              owner: root
+              mode: "777"
+          - name: create_tmp_cni_directory
+            ansible.builtin.file:
+              path: /tmp/cni
+              state: directory
+              owner: root
+              mode: "777"
+          - name: create_cni_directory
+            ansible.builtin.file:
+              path: /opt/cni/bin
+              state: directory
+              owner: root
+              mode: "777"
+          - name: create_buildkit_directory
+            ansible.builtin.file:
+              path: /usr/local/buildkit
+              state: directory
+              mode: "777"
+          - name: download_nerdctl
+            ansible.builtin.get_url:
+              url: https://github.com/containerd/nerdctl/releases/download/v0.20.0/nerdctl-0.20.0-linux-arm64.tar.gz
+              dest: /tmp/nerdctl
+              mode: "777"
+          - name: extract_nerdctl
+            ansible.builtin.unarchive:
+              src: /tmp//nerdctl/nerdctl-0.20.0-linux-arm64.tar.gz
+              dest: /usr/local/bin
+              remote_src: true
+          - name: download_buildkit
+            ansible.builtin.get_url:
+              url: https://github.com/moby/buildkit/releases/download/v0.10.3/buildkit-v0.10.3.linux-arm64.tar.gz
+              dest: /tmp/buildkit
+              mode: "777"
+          - name: extract-buildkit
+            ansible.builtin.unarchive:
+              src: /tmp/buildkit/buildkit-v0.10.3.linux-arm64.tar.gz
+              dest: /usr/local/buildkit
+              mode: "777"
+          - name: copy_bashrc
+            ansible.builtin.lineinfile:
+              path: /home/ubuntu/.bashrc
+              line: "PATH=$PATH:/usr/local/buildkit/bin"
+              create: true
+              mode: "777"
+          - name: download_cni
+            ansible.builtin.get_url:
+              url: https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-arm64-v1.1.1.tgz
+              dest: /tmp/cni
+              mode: "777"
+          - name: extract_cni
+            ansible.builtin.unarchive:
+              src: /tmp/cni/cni-plugins-linux-arm64-v1.1.1.tgz
+              dest: /opt/cni/bin
+              mode: "777"
+
+          # - name: add_path
+          #   ansible.builtin.command:
+          #     cmd: "/bin/bash -lc"
+    path: /home/ansible_user/ansible.yml
+  - content: |
+      YOUR SECRET KEY
+    path: YOUR PATH
