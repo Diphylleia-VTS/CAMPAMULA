@@ -1,0 +1,58 @@
+- hosts: multipass
+  connection: local
+  remote_user: charlotte_j
+
+  tasks:
+    - name: create_nerdctl_directory
+      ansible.builtin.file:
+        path: /tmp/nerdctl
+        state: directory
+        owner: root
+        mode: "777"
+    - name: create_tmp_buildkit_directory
+      ansible.builtin.file:
+        path: /tmp/buildkit
+        state: directory
+        owner: root
+        mode: "777"
+    - name: create_buildkit_directory
+      ansible.builtin.file:
+        path: /usr/local/buildkit
+        state: directory
+        mode: "777"
+    - name: download_nerdctl
+      ansible.builtin.get_url:
+        url: https://github.com/containerd/nerdctl/releases/download/v0.20.0/nerdctl-0.20.0-linux-arm64.tar.gz
+        dest: /tmp/nerdctl
+        mode: "777"
+    - name: extract_nerdctl
+      ansible.builtin.unarchive:
+        src: /tmp//nerdctl/nerdctl-0.20.0-linux-arm64.tar.gz
+        dest: /usr/local/bin
+        remote_src: true
+    - name: download_buildkit
+      ansible.builtin.get_url:
+        url: https://github.com/moby/buildkit/releases/download/v0.10.3/buildkit-v0.10.3.linux-arm64.tar.gz
+        dest: /tmp/buildkit
+        mode: "777"
+    - name: extract-buildkit # gtarはplaybook実行側にいれる
+      ansible.builtin.unarchive:
+        src: /tmp/buildkit/buildkit-v0.10.3.linux-arm64.tar.gz
+        dest: /usr/local/buildkit
+        mode: "777"
+    - name: copy_bashrc
+      ansible.builtin.lineinfile:
+        path: /home/charlotte_j/.bashrc
+        line: "aaa"
+        create: true
+        mode: "777"
+
+    - name: download_cni
+      ansible.builtin.get_url:
+        url: https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-arm64-v1.1.1.tgz
+        dest: /tmp
+        mode: "777"
+
+    # - name: add_path
+    #   ansible.builtin.command:
+    #     cmd: "/bin/bash -lc"

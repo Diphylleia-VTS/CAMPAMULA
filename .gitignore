@@ -30,3 +30,6 @@ override.tf.json
 CloudInit/id_rsa_cloud_init_ubuntu1.pub
 CloudInit/id_rsa_cloud_init_ubuntu2.pub
 CloudInit/id_rsa_cloud_init_ubuntu3.pub
+
+DiphylleiaTasks
+howtouse.txt
